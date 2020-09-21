@@ -10,8 +10,6 @@ import com.kakao.auth.ISessionConfig;
 import com.kakao.auth.KakaoAdapter;
 import com.kakao.auth.KakaoSDK;
 
-import timber.log.Timber;
-import timber.log.Timber.DebugTree;
 
 
 public class GlobalApplication extends Application {
@@ -27,7 +25,6 @@ public class GlobalApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
-    Timber.plant(new DebugTree());
 
     instance = this;
 
