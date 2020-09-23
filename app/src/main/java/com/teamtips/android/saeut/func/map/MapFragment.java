@@ -27,8 +27,14 @@ import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapReverseGeoCoder;
 import net.daum.mf.map.api.MapView;
 
+import java.io.IOException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import static android.content.Context.LOCATION_SERVICE;
-import static net.daum.mf.map.api.MapView.CurrentLocationTrackingMode.TrackingModeOff;
 import static net.daum.mf.map.api.MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading;
 import static net.daum.mf.map.api.MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving;
 
@@ -40,6 +46,16 @@ public class MapFragment extends Fragment implements MapView.CurrentLocationEven
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION};
     MapView mapView;
+    MapPoint.GeoCoordinate currentpointGeo = new MapPoint.GeoCoordinate(37.54892296550104, 126.99089033876304);
+    MapPoint currentMakerPoint;
+
+    Callable<KaKaoLocationAPI> callLocation = new Callable<KaKaoLocationAPI>() {
+        RequestLocationInfo requestLocationInfo = new RequestLocationInfo();
+        @Override
+        public KaKaoLocationAPI call() throws Exception {
+            return requestLocationInfo.requestLocation(currentpointGeo.longitude, currentpointGeo.latitude);
+        }
+    };
 
     private static class MapFragmentHolder {
         public static final MapFragment mapFragment = new MapFragment();
@@ -83,7 +99,7 @@ public class MapFragment extends Fragment implements MapView.CurrentLocationEven
         // 줌 레벨 변경
         mapView.setZoomLevel(4, true);
 
-        //마커 찍기
+        //기본위치 마커 찍기
         MapPoint MARKER_POINT = MapPoint.mapPointWithGeoCoord(37.54892296550104, 126.99089033876304);
         MapPOIItem marker = new MapPOIItem();
         marker.setItemName("Default Marker");
@@ -93,17 +109,44 @@ public class MapFragment extends Fragment implements MapView.CurrentLocationEven
         marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
         mapView.addPOIItem(marker);
 
+        //현재위치 마커 생성
+        MapPOIItem currentmarker = new MapPOIItem();
+        currentmarker.setItemName("CurrentLocation");
+        currentmarker.setMarkerType(MapPOIItem.MarkerType.YellowPin);
+        marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin);
+        mapView.addPOIItem(currentmarker);
+
         //현위치 확인하고 지도 중심으로 마커찍고 이동, 좌표값 넘겨주고 주소 받아오기
         goto_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mapView.setMapCenterPoint(marker.getMapPoint(), true);
+                ExecutorService service = Executors.newSingleThreadExecutor();
+                Future<KaKaoLocationAPI> future = service.submit(callLocation);
+                Log.e(Tag,"goto_btn onClick");
+                try{
+                    KaKaoLocationAPI currentLocationInfo = future.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    Log.e(Tag,"fuck");
+                    e.printStackTrace();
+                }
+//                RequestLocationInfo requestLocationInfo = new RequestLocationInfo();
+//                KaKaoLocationAPI kaKaoLocationAPI = new KaKaoLocationAPI();
+//                try {
+//                    kaKaoLocationAPI.setKaKaoLocationAPI(requestLocationInfo.requestLocation(currentpointGeo.longitude, currentpointGeo.latitude));
+//                    Log.e(Tag,"kaKaoLocationAPI: "+kaKaoLocationAPI.documentsArrayList.get(0).address_name);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         });
+
+        //서치 결과 주소 api로 넘기기
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String search_edit = search_address.getText().toString();
+                search_address.setText("");
                 Log.e(Tag,"search_edit:"+search_edit);
             }
         });
@@ -119,7 +162,10 @@ public class MapFragment extends Fragment implements MapView.CurrentLocationEven
 
     @Override
     public void onCurrentLocationUpdate(MapView mapView, MapPoint currentLocation, float accuracyInMeters) {
-        Log.e(Tag,"onCurrentLocationUpdate");
+        currentpointGeo = currentLocation.getMapPointGeoCoord();
+        currentMakerPoint = MapPoint.mapPointWithGeoCoord(currentpointGeo.latitude, currentpointGeo.longitude);
+
+        Log.e(Tag,"currentpointGeo: "+currentpointGeo.longitude+", "+currentpointGeo.latitude);
     }
 
     // 이게 방향바꾸는거같은데;;

@@ -2,35 +2,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.teamtips.android.saeut.func.map.MapFragment">
-
-    <!-- TODO: Update blank fragment layout -->
 
     <RelativeLayout
         android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="center">
-        <Button
-            android:id="@+id/search_btn"
+        android:gravity="center"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <LinearLayout
+            android:id="@+id/search_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            />
-        <EditText
-            android:id="@+id/search_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="주소를 검색해주세요."
-            android:background="@color/colorWhite"
-            android:layout_below="@+id/search_btn"/>
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/search_address"
+                android:layout_width="250dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="16dp"
+                android:alpha="1.0"
+                android:background="#4489BD"
+                android:hint=" 시,군,구,동으로 검색하세요 "
+                android:imeOptions="actionSearch"
+                android:singleLine="true"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="70dp" />
+
+            <Button
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="15dp"
+                android:id="@+id/search_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                tools:layout_editor_absoluteX="355dp"
+                tools:layout_editor_absoluteY="16dp" />
+
+        </LinearLayout>
+
         <Button
             android:id="@+id/goto_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/search_address"
-            android:text="지정된 좌표로 이동합니다."/>
+            android:layout_width="150dp"
+            android:layout_height="24dp"
+            android:layout_below="@+id/search_bar"
+            android:layout_marginTop="15dp"
+            android:alpha="0.8"
+            android:background="#00D4CD"
+            android:text="현재 위치로 돌아갑니다"
+            android:textColor="#0017AA"
+            android:visibility="visible"
+            tools:layout_editor_absoluteX="130dp"
+            tools:layout_editor_absoluteY="69dp"
+            android:layout_centerHorizontal="true"/>
     </RelativeLayout>
-
 
 </FrameLayout>

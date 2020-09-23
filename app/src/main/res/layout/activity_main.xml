@@ -53,12 +53,7 @@
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/navigation" />
 
-
         </RelativeLayout>
-
-
-
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
